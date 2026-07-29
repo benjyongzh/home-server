@@ -1,0 +1,24 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    restart: unless-stopped
+
+    ports:
+      - "${JELLYFIN_HOST_PORT}:8096"
+
+    environment:
+      TZ: ${TZ}
+
+    volumes:
+      - ./data/config:/config
+      - ./data/cache:/cache
+      - ${MEDIA_ROOT}:/media:ro
+
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true
+    name: ${SHARED_NETWORK}

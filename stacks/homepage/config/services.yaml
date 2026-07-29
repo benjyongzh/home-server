@@ -1,0 +1,104 @@
+- Media:
+
+    - Jellyfin:
+        href: "{{HOMEPAGE_VAR_JELLYFIN_URL}}"
+        icon: jellyfin.png
+        description: Media server
+        widget:
+          type: jellyfin
+          url: "{{HOMEPAGE_VAR_JELLYFIN_URL}}"
+          key: "{{HOMEPAGE_VAR_JELLYFIN_KEY}}"
+          enableBlocks: true
+          enableNowPlaying: true
+
+    - Immich:
+        href: "{{HOMEPAGE_VAR_IMMICH_URL}}"
+        icon: immich.png
+        description: Photo intelligence and indexing
+        widget:
+          type: immich
+          url: "{{HOMEPAGE_VAR_IMMICH_URL}}"
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+          version: 2 # optional, default is 1
+
+- Torrent:
+    - qBittorrent:
+        href: "{{HOMEPAGE_VAR_QBITTORRENT_URL}}"
+        icon: qbittorrent.png
+        widget:
+          type: qbittorrent
+          url: "{{HOMEPAGE_VAR_QBITTORRENT_URL}}"
+          username: "{{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}"
+          enableLeechProgress: true # optional, defaults to false
+          enableLeechSize: true # optional, defaults to false
+
+    - Radarr:
+        href: "{{HOMEPAGE_VAR_RADARR_URL}}"
+        icon: radarr.png
+        widget:
+          type: radarr
+          url: "{{HOMEPAGE_VAR_RADARR_URL}}"
+          key: "{{HOMEPAGE_VAR_RADARR_KEY}}"
+          enableQueue: true # optional, defaults to false
+
+    - Sonarr:
+        href: "{{HOMEPAGE_VAR_SONARR_URL}}"
+        icon: sonarr.png
+        widget:
+          type: sonarr
+          url: "{{HOMEPAGE_VAR_SONARR_URL}}"
+          key: "{{HOMEPAGE_VAR_SONARR_KEY}}"
+          enableQueue: true # optional, defaults to false
+
+    - Prowlarr:
+        href: "{{HOMEPAGE_VAR_PROWLARR_URL}}"
+        icon: prowlarr.png
+        widget:
+          type: prowlarr
+          url: "{{HOMEPAGE_VAR_PROWLARR_URL}}"
+          key: "{{HOMEPAGE_VAR_PROWLARR_KEY}}"
+
+    - Bazarr:
+        href: "{{HOMEPAGE_VAR_BAZARR_URL}}"
+        icon: bazarr.png
+        widget:
+          type: bazarr
+          url: "{{HOMEPAGE_VAR_BAZARR_URL}}"
+          key: "{{HOMEPAGE_VAR_BAZARR_KEY}}"
+
+
+- Storage:
+    - Nextcloud:
+        href: "{{HOMEPAGE_VAR_NEXTCLOUD_URL}}"
+        icon: nextcloud.png
+        description: Home cloud
+        widget:
+          type: nextcloud
+          url: "{{HOMEPAGE_VAR_NEXTCLOUD_URL}}"
+          username: "{{HOMEPAGE_VAR_NEXTCLOUD_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_NEXTCLOUD_PASSWORD}}"
+
+- Infra:
+    - Beszel:
+        href: "{{HOMEPAGE_VAR_BESZEL_URL}}"
+        icon: beszel.png
+        description: System resource usage
+        widget:
+          type: beszel
+          url: "{{HOMEPAGE_VAR_BESZEL_URL}}"
+          username: "{{HOMEPAGE_VAR_BESZEL_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_BESZEL_PASSWORD}}"
+          systemId: "{{HOMEPAGE_VAR_BESZEL_SYSTEM_ID}}"
+          version: 2 # optional, default is 1
+
+
+    - Adguard:
+        href: "{{HOMEPAGE_VAR_ADGUARD_URL}}"
+        icon: adguard-home.png
+        description: DNS
+        widget:
+          type: adguard
+          url: "{{HOMEPAGE_VAR_ADGUARD_URL}}"
+          username: "{{HOMEPAGE_VAR_ADGUARD_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_ADGUARD_PASSWORD}}"

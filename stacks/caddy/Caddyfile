@@ -1,0 +1,31 @@
+http://jellyfin.{$LOCAL_DOMAIN} {
+	reverse_proxy jellyfin:8096
+}
+
+http://nextcloud.{$LOCAL_DOMAIN} {
+	reverse_proxy nextcloud:80
+}
+
+http://beszel.{$LOCAL_DOMAIN} {
+	reverse_proxy beszel:8090
+}
+
+http://homepage.{$LOCAL_DOMAIN} {
+	reverse_proxy homepage:3000
+}
+
+http://immich.{$LOCAL_DOMAIN} {
+	reverse_proxy immich_server:2283
+}
+
+http://qbittorrent.{$LOCAL_DOMAIN} {
+	reverse_proxy gluetun:8080
+}
+
+http://radarr.{$LOCAL_DOMAIN} {
+	reverse_proxy radarr:7878
+}
+
+http://sonarr.{$LOCAL_DOMAIN} {
+	reverse_proxy sonarr:8989
+}

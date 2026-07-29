@@ -1,0 +1,45 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+
+    container_name: homepage
+
+    ports:
+      - "${HOMEPAGE_HOST_PORT}:3000"
+
+    volumes:
+      - ./config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+    env_file:
+      - .env
+
+    environment:
+      TZ: ${TZ}
+      HOMEPAGE_ALLOWED_HOSTS: "${LOCAL_IP}:${HOMEPAGE_HOST_PORT},homepage.${LOCAL_DOMAIN}"
+
+      HOMEPAGE_VAR_JELLYFIN_URL: "${LOCAL_SCHEME}://jellyfin.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_IMMICH_URL: "${LOCAL_SCHEME}://immich.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_QBITTORRENT_URL: "${LOCAL_SCHEME}://qbittorrent.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_RADARR_URL: "${LOCAL_SCHEME}://radarr.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_SONARR_URL: "${LOCAL_SCHEME}://sonarr.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_PROWLARR_URL: "${LOCAL_SCHEME}://${LOCAL_IP}:${PROWLARR_HOST_PORT}"
+      HOMEPAGE_VAR_BAZARR_URL: "${LOCAL_SCHEME}://${LOCAL_IP}:${BAZARR_HOST_PORT}"
+      HOMEPAGE_VAR_NEXTCLOUD_URL: "${LOCAL_SCHEME}://nextcloud.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_BESZEL_URL: "${LOCAL_SCHEME}://beszel.${LOCAL_DOMAIN}"
+      HOMEPAGE_VAR_ADGUARD_URL: "${LOCAL_SCHEME}://${LOCAL_IP}:${ADGUARD_WEB_PORT}"
+
+      HOMEPAGE_VAR_QBITTORRENT_USERNAME: ${PRIMARY_USER}
+      HOMEPAGE_VAR_NEXTCLOUD_USERNAME: ${PRIMARY_USER}
+      HOMEPAGE_VAR_BESZEL_USERNAME: ${PRIMARY_EMAIL}
+      HOMEPAGE_VAR_ADGUARD_USERNAME: ${PRIMARY_USER}
+
+    restart: unless-stopped
+
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true
+    name: ${SHARED_NETWORK}

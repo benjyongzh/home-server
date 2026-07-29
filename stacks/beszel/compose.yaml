@@ -1,0 +1,20 @@
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+
+    restart: unless-stopped
+
+    ports:
+      - "${BESZEL_HOST_PORT}:8090"
+
+    volumes:
+      - ./data:/beszel_data
+
+    networks:
+      - shared
+
+networks:
+  shared:
+    external: true
+    name: ${SHARED_NETWORK}

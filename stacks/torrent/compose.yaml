@@ -1,0 +1,253 @@
+name: torrent
+
+services:
+  # ==========================================================
+  # VPN GATEWAY
+  # ==========================================================
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    restart: unless-stopped
+
+    cap_add:
+      - NET_ADMIN
+
+    devices:
+      - /dev/net/tun:/dev/net/tun
+
+    environment:
+      TZ: ${TZ}
+
+      VPN_SERVICE_PROVIDER: protonvpn
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+
+      SERVER_COUNTRIES: ${VPN_SERVER_COUNTRIES}
+
+      # Restrict selection to Proton servers supporting
+      # VPN-side port forwarding/P2P.
+      PORT_FORWARD_ONLY: "on"
+
+      # Ask Gluetun to obtain a forwarded port from Proton.
+      VPN_PORT_FORWARDING: "on"
+
+      VPN_PORT_FORWARDING_UP_COMMAND: >-
+        /bin/sh -c "/scripts/update-qbit-port.sh up '{{PORTS}}'"
+
+      VPN_PORT_FORWARDING_DOWN_COMMAND: >-
+        /bin/sh -c "/scripts/update-qbit-port.sh down"
+
+      # Allows qBittorrent's Web UI to be reached from the
+      # Docker/LAN-facing side of Gluetun.
+      FIREWALL_INPUT_PORTS: ${QBITTORRENT_INTERNAL_PORT}
+
+    volumes:
+      - ./gluetun:/gluetun
+      - ./scripts:/scripts:ro
+
+    ports:
+      # qBittorrent Web UI.
+      # Host 8091 -> qBittorrent/Gluetun internal 8080.
+      - "${LOCAL_IP}:${QBITTORRENT_HOST_PORT}:${QBITTORRENT_INTERNAL_PORT}"
+
+    networks:
+      torrent-backend:
+        aliases:
+          - qbittorrent-vpn
+      shared:
+        aliases:
+          - qbittorrent-vpn
+
+    security_opt:
+      - no-new-privileges:true
+
+    healthcheck:
+      test: ["CMD", "/gluetun-entrypoint", "healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+
+  # ==========================================================
+  # TORRENT CLIENT
+  # ==========================================================
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    restart: unless-stopped
+
+    # qBittorrent gets no independent network interface.
+    # All of its traffic passes through Gluetun.
+    network_mode: "service:gluetun"
+
+    depends_on:
+      gluetun:
+        condition: service_healthy
+        restart: true
+
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+
+      WEBUI_PORT: ${QBITTORRENT_INTERNAL_PORT}
+
+      # This is an initial listening port. Proton's forwarded
+      # torrent port is dynamic and will be configured later.
+      TORRENTING_PORT: "6881"
+
+    volumes:
+      - ./config/qbittorrent:/config
+      - ${MEDIA_ROOT}:/data
+
+    security_opt:
+      - no-new-privileges:true
+
+
+  # ==========================================================
+  # MOVIE MANAGEMENT
+  # ==========================================================
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: unless-stopped
+
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+
+    volumes:
+      - ./config/radarr:/config
+      - ${MEDIA_ROOT}:/data
+
+    ports:
+      - "${LOCAL_IP}:${RADARR_HOST_PORT}:7878"
+
+    networks:
+      - torrent-backend
+      - shared
+
+    security_opt:
+      - no-new-privileges:true
+
+
+  # ==========================================================
+  # TV MANAGEMENT
+  # ==========================================================
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: unless-stopped
+
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+
+    volumes:
+      - ./config/sonarr:/config
+      - ${MEDIA_ROOT}:/data
+
+    ports:
+      - "${LOCAL_IP}:${SONARR_HOST_PORT}:8989"
+
+    networks:
+      - torrent-backend
+      - shared
+
+    security_opt:
+      - no-new-privileges:true
+
+
+  # ==========================================================
+  # INDEXER MANAGEMENT
+  # ==========================================================
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+
+    volumes:
+      - ./config/prowlarr:/config
+
+    ports:
+      - "${LOCAL_IP}:${PROWLARR_HOST_PORT}:9696"
+
+    networks:
+      - torrent-backend
+      - shared
+
+    security_opt:
+      - no-new-privileges:true
+
+
+  # ==========================================================
+  # SUBTITLE MANAGEMENT
+  # ==========================================================
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    restart: unless-stopped
+
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TZ}
+
+    volumes:
+      - ./config/bazarr:/config
+
+      # Bazarr needs write access because it writes subtitle
+      # files beside movie and television files.
+      - ${MEDIA_ROOT}:/data
+
+    ports:
+      - "${LOCAL_IP}:${BAZARR_HOST_PORT}:6767"
+
+    networks:
+      - torrent-backend
+      - shared
+
+    security_opt:
+      - no-new-privileges:true
+
+
+
+  # ==========================================================
+  # FLARESOLVERR FOR CLOUDFLARE
+  # ==========================================================
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: unless-stopped
+
+    environment:
+      LOG_LEVEL: info
+      LOG_HTML: "false"
+      CAPTCHA_SOLVER: none
+      TZ: ${TZ}
+
+    networks:
+      - torrent-backend
+
+
+networks:
+  # Internal service-to-service network.
+  #
+  # Do not set internal:true because Prowlarr, Radarr, Sonarr
+  # and Bazarr require outbound Internet access.
+  torrent-backend:
+    name: torrent-backend
+    driver: bridge
+
+  # Your existing shared network containing Homepage/Caddy.
+  shared:
+    external: true
+    name: ${SHARED_NETWORK}

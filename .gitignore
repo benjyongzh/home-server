@@ -1,0 +1,114 @@
+###############################################################################
+# Secrets and environment files
+###############################################################################
+
+.env
+.env.*
+!.env.example
+
+passwords.txt
+passwords.*
+!passwords.example.*
+
+credentials*
+secrets*
+
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ovpn
+wg0.conf
+
+###############################################################################
+# Application runtime configuration/state
+###############################################################################
+
+# Torrent applications store databases, API keys, logs and runtime state here
+/stacks/torrent/config/
+
+# Gluetun runtime state may contain VPN-related data
+/stacks/torrent/gluetun/
+
+# Application-managed data directories anywhere below stacks
+/stacks/**/data/
+/stacks/**/database/
+/stacks/**/databases/
+/stacks/**/db/
+/stacks/**/cache/
+/stacks/**/logs/
+/stacks/**/log/
+/stacks/**/backup/
+/stacks/**/backups/
+/stacks/**/tmp/
+/stacks/**/temp/
+
+###############################################################################
+# Databases and runtime files
+###############################################################################
+
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+
+###############################################################################
+# Logs, backups and archives
+###############################################################################
+
+*.log
+*.log.*
+*.bak
+*.backup
+*.old
+
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.7z
+*.rar
+
+/backups/
+
+###############################################################################
+# Container runtime
+###############################################################################
+
+/containerd/
+
+###############################################################################
+# Generated or temporary Compose files
+###############################################################################
+
+*.original
+
+###############################################################################
+# Obsidian local state
+###############################################################################
+
+/docs/.obsidian/workspace.json
+/docs/.obsidian/workspace-mobile.json
+/docs/.obsidian/cache/
+/docs/.trash/
+
+###############################################################################
+# Development artifacts
+###############################################################################
+
+__pycache__/
+*.py[cod]
+node_modules/
+.vscode/
+
+###############################################################################
+# Operating-system files
+###############################################################################
+
+.DS_Store
+Thumbs.db
