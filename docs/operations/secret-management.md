@@ -33,7 +33,7 @@ rendered model can contain interpolated secrets.
 | Nextcloud | `NEXTCLOUD_ADMIN_PASSWORD` | Initial Nextcloud administrator password |
 | PostgreSQL | `POSTGRES_PASSWORD` | Shared PostgreSQL administrative password |
 | Torrent | `WIREGUARD_PRIVATE_KEY` | ProtonVPN WireGuard private key |
-| Legacy SMB | Credentials file referenced by `/etc/fstab` | Legacy `/mnt/media` authentication; intentionally absent from Git |
+| Former legacy SMB | Old credentials file, if retained locally | The `/mnt/media` fstab entry is commented out; these credentials are not needed by the NAS-backed stacks and must stay out of Git |
 
 Usernames, email addresses, hostnames, LAN/Tailscale addresses, and paths are
 not passwords but can be sensitive deployment metadata. Keep real values in

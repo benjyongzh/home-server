@@ -48,12 +48,12 @@ may block for an unbounded period while the NAS is unavailable. See
 
 ## Legacy SMB storage
 
-`/mnt/media` is still an automounted CIFS share from the former Windows-hosted
-media location. It is legacy storage. None of the migrated Jellyfin,
-qBittorrent, Radarr, Sonarr, or Bazarr mounts should point at it.
-
-Do not remove its `/etc/fstab` line until all remaining consumers outside this
-repository have been identified. Do not use it for new deployments.
+`/mnt/media` was the former Windows-hosted CIFS media share. Its `/etc/fstab`
+entry is now commented out on the source host, and the reproducible fstab
+example intentionally omits it. Jellyfin, qBittorrent, Radarr, Sonarr, and
+Bazarr use `/mnt/nas/data` instead. Do not re-enable `/mnt/media` when
+reconstructing this homelab; assess any unrelated external consumers
+separately.
 
 ## NFS identity and permissions
 
