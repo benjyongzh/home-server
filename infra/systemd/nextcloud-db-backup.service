@@ -6,4 +6,5 @@ After=docker.service mnt-nas-backups.automount
 
 [Service]
 Type=oneshot
+EnvironmentFile=/opt/shared/.env
 ExecStart=/usr/local/sbin/backup-nextcloud-db.sh

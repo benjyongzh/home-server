@@ -50,11 +50,18 @@ putting them into Git history.
 ## 3. Recreate NAS integration
 
 1. Recreate `/mnt/nas/data`, `/mnt/nas/nextcloud`, and `/mnt/nas/backups`.
-2. Merge `infra/examples/fstab.nas.example` into `/etc/fstab`.
+2. In `shared/.env`, set `NAS_HOST` to this installation's NAS address or
+   hostname. Edit all three NFS source addresses in
+   `infra/examples/fstab.nas.example` to match, then merge the adapted lines
+   into `/etc/fstab`. Adjust export paths and mount points if they differ from
+   the example, and keep the corresponding `NAS_*_ROOT` and
+   `NEXTCLOUD_DATA_PATH` values in `shared/.env` consistent. `/etc/fstab` does
+   not read `.env` automatically.
 3. Install the mirrored scripts and systemd units as described in
    [`infra/README.md`](../../infra/README.md).
 4. Reload systemd.
-5. Trigger each automount and verify the exact source with `findmnt`.
+5. Trigger each automount and verify with `findmnt` that all three NFS sources
+   are the intended NAS exports before creating or starting containers.
 6. Confirm `/mnt/nas/nextcloud/data/.ncdata` exists.
 7. Reapply the NAS NFS export/ACL policy and UGOS Pro snapshot schedules.
 

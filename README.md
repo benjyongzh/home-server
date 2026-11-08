@@ -406,10 +406,15 @@ type; it is not a literal value to paste.
 | `NAS_BACKUP_ROOT` | Ubuntu mount point for the NAS backup export | Yes |
 | Host-port variables | An unused host port for every variable in the port table above | Yes for enabled services |
 
-The `NAS_*` values document the deployment layout. The actual NFS export
-sources and mount options are installed from
-[`infra/examples/fstab.nas.example`](infra/examples/fstab.nas.example); shell
-variables are not expanded by `/etc/fstab`.
+Set `NAS_HOST` to your NAS's address or hostname, then replace the current
+homelab address (`192.168.0.220`) in **all three** NFS lines of
+[`infra/examples/fstab.nas.example`](infra/examples/fstab.nas.example) before
+merging them into your machine's `/etc/fstab`. If your export names or Ubuntu
+mount points differ, update those lines and the matching `NAS_*_ROOT` and
+`NEXTCLOUD_DATA_PATH` values too. `/etc/fstab` does not read or expand
+`shared/.env`; changing `NAS_HOST` alone does not change the NFS mounts.
+Verify the mounted sources with `findmnt` before starting NAS-dependent
+containers.
 
 ### Stack-specific values
 

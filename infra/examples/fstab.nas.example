@@ -1,6 +1,12 @@
 # UGREEN DH4300 Plus NFS exports.
 # Merge these lines into /etc/fstab; do not replace the host's complete file.
 # Ensure the mount-point directories exist before reloading systemd.
+# 192.168.0.220 is this homelab's NAS address, not a universal value.
+# On another machine, replace it in ALL THREE lines with that NAS's address or
+# resolvable hostname, and set NAS_HOST in /opt/shared/.env to the same value.
+# Adjust export paths and mount points if the NAS layout differs; keep the
+# matching NAS_*_ROOT and NEXTCLOUD_DATA_PATH values in shared/.env consistent.
+# /etc/fstab does not read or expand shared/.env variables.
 
 192.168.0.220:/volume1/data /mnt/nas/data nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0
 192.168.0.220:/volume1/nextcloud-data /mnt/nas/nextcloud nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0

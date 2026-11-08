@@ -8,9 +8,10 @@ The NAS-dependent startup path is:
 2. `/etc/fstab` generates systemd automount units for the three NFS paths.
 3. Docker starts.
 4. Enabled `nas-apps.service` runs as part of `docker.service` startup.
-5. `check-nas-mounts.sh` triggers and validates the `data` and `nextcloud`
-   mounts and their exact NFS sources.
-6. The unit verifies `/mnt/nas/nextcloud/data/.ncdata`.
+5. Systemd loads `/opt/shared/.env`; `check-nas-mounts.sh` triggers and validates
+   the `data` and `nextcloud` mounts and their exact NFS sources using its NAS
+   host and mount-path settings.
+6. The script verifies the configured Nextcloud data directory's `.ncdata` marker.
 7. Docker starts `jellyfin`, `nextcloud`, `immich_server`, `radarr`, `sonarr`,
    and `bazarr`.
 
@@ -44,8 +45,8 @@ For each required application export it:
 
 It currently validates `/mnt/nas/data` and `/mnt/nas/nextcloud`. It does not
 validate `/mnt/nas/backups`, because that export is not required to start the
-six applications. Backup monitoring must check it separately if NAS-hosted
-backup workflows begin depending on it.
+six applications. The database backup script separately validates the backups
+export before publishing its NAS copy.
 
 ## `nas-apps.service`
 
@@ -86,7 +87,9 @@ NAS-dependent application.
 Read-only checks:
 
 ```bash
-sudo /usr/local/sbin/check-nas-mounts.sh
+sudo systemd-run --wait --collect --pipe \
+  -p EnvironmentFile=/opt/shared/.env \
+  /usr/local/sbin/check-nas-mounts.sh
 findmnt -M /mnt/nas/data
 findmnt -M /mnt/nas/nextcloud
 findmnt -M /mnt/nas/backups

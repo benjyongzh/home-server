@@ -1,6 +1,16 @@
 #!/bin/sh
 set -eu
 
+: "${NAS_HOST:?Set NAS_HOST in /opt/shared/.env}"
+: "${NAS_DATA_ROOT:?Set NAS_DATA_ROOT in /opt/shared/.env}"
+: "${NAS_NEXTCLOUD_ROOT:?Set NAS_NEXTCLOUD_ROOT in /opt/shared/.env}"
+: "${NEXTCLOUD_DATA_PATH:?Set NEXTCLOUD_DATA_PATH in /opt/shared/.env}"
+
+case "$NEXTCLOUD_DATA_PATH" in
+    "$NAS_NEXTCLOUD_ROOT"/*) ;;
+    *) echo "ERROR: Nextcloud data path must be inside the NAS Nextcloud mount" >&2; exit 1 ;;
+esac
+
 check_mount() {
     path="$1"
     expected="$2"
@@ -28,11 +38,16 @@ check_mount() {
 }
 
 check_mount \
-    /mnt/nas/data \
-    192.168.0.220:/volume1/data
+    "$NAS_DATA_ROOT" \
+    "$NAS_HOST:/volume1/data"
 
 check_mount \
-    /mnt/nas/nextcloud \
-    192.168.0.220:/volume1/nextcloud-data
+    "$NAS_NEXTCLOUD_ROOT" \
+    "$NAS_HOST:/volume1/nextcloud-data"
+
+if [ ! -f "$NEXTCLOUD_DATA_PATH/.ncdata" ]; then
+    echo "ERROR: Nextcloud data marker is missing" >&2
+    exit 1
+fi
 
 echo "All required NAS mounts verified."

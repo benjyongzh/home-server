@@ -35,6 +35,12 @@ It:
    the verified copy;
 9. deletes `nextcloud-*.dump` files older than 29 days from both destinations.
 
+The backup service loads `/opt/shared/.env` through systemd's
+`EnvironmentFile=`. The script requires `NAS_HOST`, `NAS_BACKUP_ROOT`, and
+`NEXTCLOUD_DB_BACKUP_DIR`; it verifies the configured NAS export before
+creating or writing a backup directory there. Changing `/etc/fstab` remains a
+separate host administration step.
+
 `-mtime +29` gives approximately 30 days of retention based on whole-day age.
 
 The systemd timer is actually configured as:
@@ -58,6 +64,11 @@ manual/initial archive from 00:17 and the scheduled 02:00 archive, each about
 This is a short execution history because the timer was newly introduced.
 Continue monitoring it until several daily runs and retention cleanup have
 been observed.
+
+The successful 02:00 service result alone did not establish that a NAS copy
+existed: none was found during the later preflight. A manual run at 13:13 on
+8 November 2026 succeeded with the updated script and produced a matching
+local and NAS archive; this is the first verified NAS copy.
 
 ### Operational checks
 

@@ -31,7 +31,9 @@ Expected sources:
 Run the application-mount validator:
 
 ```bash
-sudo /usr/local/sbin/check-nas-mounts.sh
+sudo systemd-run --wait --collect --pipe \
+  -p EnvironmentFile=/opt/shared/.env \
+  /usr/local/sbin/check-nas-mounts.sh
 ```
 
 It intentionally does not check the backups export.
@@ -65,7 +67,9 @@ network failures can block commands.
 ```bash
 systemctl status nas-apps.service
 journalctl -u nas-apps.service -b
-sudo /usr/local/sbin/check-nas-mounts.sh
+sudo systemd-run --wait --collect --pipe \
+  -p EnvironmentFile=/opt/shared/.env \
+  /usr/local/sbin/check-nas-mounts.sh
 test -f /mnt/nas/nextcloud/data/.ncdata
 ```
 

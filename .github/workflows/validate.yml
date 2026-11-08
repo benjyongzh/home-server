@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The whitespace check needs the checked-out commit's parent(s).
+          fetch-depth: 0
 
       - uses: docker/setup-buildx-action@v3
 
@@ -23,11 +26,14 @@ jobs:
           for compose_file in stacks/*/compose.y*ml; do
             stack_dir="$(dirname "$compose_file")"
             stack_env="$stack_dir/.env.example"
+            # --env-file supplies tracked interpolation examples. Some services
+            # also declare ignored runtime env_file paths inside Compose; do
+            # not require or read those files in a clean CI checkout.
             docker compose \
               --project-directory "$stack_dir" \
               --env-file shared/.env.example \
               --env-file "$stack_env" \
-              -f "$compose_file" config --quiet
+              -f "$compose_file" config --no-env-resolution --quiet
           done
 
       - name: Check shell syntax
@@ -37,8 +43,11 @@ jobs:
           sh -n shared/compose.sh
           sh -n stacks/torrent/scripts/update-qbit-port.sh
 
-      - name: Check whitespace
-        run: git diff --check
+      - name: Validate example NFS mount entries
+        run: findmnt --verify --tab-file infra/examples/fstab.nas.example
+
+      - name: Check committed whitespace
+        run: git diff-tree --check --root -m -r --no-commit-id HEAD
 
   secret-scan:
     runs-on: ubuntu-latest

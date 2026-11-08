@@ -9,12 +9,10 @@ StartLimitIntervalSec=0
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+EnvironmentFile=/opt/shared/.env
 
 # Confirm that the NAS is mounted correctly
 ExecStartPre=/usr/local/sbin/check-nas-mounts.sh
-
-# Confirm the Nextcloud data directory exists
-ExecStartPre=/usr/bin/test -f /mnt/nas/nextcloud/data/.ncdata
 
 # Start only NAS-dependent applications
 ExecStart=/usr/bin/docker start jellyfin nextcloud immich_server radarr sonarr bazarr

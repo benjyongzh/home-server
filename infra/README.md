@@ -9,6 +9,14 @@ coreutils (`timeout`, `install`, `mktemp`, `mv`), findutils, util-linux
 (`findmnt`), and `nfs-common`. The PostgreSQL container must provide `pg_dump`
 and `pg_restore`.
 
+Both systemd services read `/opt/shared/.env` using `EnvironmentFile=`. Configure
+`NAS_HOST`, `NAS_DATA_ROOT`, `NAS_NEXTCLOUD_ROOT`, `NAS_BACKUP_ROOT`,
+`NEXTCLOUD_DATA_PATH`, and `NEXTCLOUD_DB_BACKUP_DIR` before enabling them.
+Systemd does not expand references such as `${INSTALL_ROOT}` inside that file;
+the NAS scripts use only the literal values of the six variables above. Keep
+the live file private. `/etc/fstab` is separate and must still be updated if
+the NAS address or mount paths change.
+
 See [NAS integration](../docs/architecture/nas-integration.md) for the exact
 dependency chain, limitations, and verification commands.
 
@@ -23,12 +31,10 @@ dependency chain, limitations, and verification commands.
 | `systemd/nextcloud-db-backup.timer` | `/etc/systemd/system/nextcloud-db-backup.timer` | `0644 root:root` |
 | `examples/fstab.nas.example` | Merge into `/etc/fstab` | `0644 root:root` |
 
-Live inspection on 8 November 2026 found the deployed scripts and units owned
-by `nobody:nogroup` (with modes ranging from `0600` to `0755`). That ownership
-is not the recommended steady state: a process running as `nobody` could own
-and potentially modify critical startup/backup files. Correct ownership to
-`root:root` during an approved maintenance change after verifying checksums;
-this repository review deliberately did not alter the live host.
+Live inspection initially found the deployed scripts and units owned by
+`nobody:nogroup`. During the approved 8 November 2026 maintenance, the two
+scripts and two changed service units were redeployed as `root:root` with the
+modes above. Verify ownership again after future deployments.
 
 Install the scripts and units on a reconstructed host:
 
@@ -43,6 +49,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable nas-apps.service
 sudo systemctl enable --now nextcloud-db-backup.timer
 ```
+
+After a unit-file change, `daemon-reload` is required. Changes to
+`shared/.env` are read on the next service invocation; they do not change
+already-running containers or rerun an active one-shot `nas-apps.service`.
 
 Do not start `nas-apps.service` until the NFS mounts, existing Docker
 containers, and Nextcloud `.ncdata` marker have been verified. The unit uses
