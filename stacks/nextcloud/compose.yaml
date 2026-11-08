@@ -2,7 +2,7 @@ services:
   nextcloud:
     image: nextcloud:33-apache
     container_name: nextcloud
-    restart: unless-stopped
+    restart: on-failure
 
     ports:
       - "${NEXTCLOUD_HOST_PORT}:80"
@@ -24,7 +24,11 @@ services:
 
     volumes:
       - ./data/html:/var/www/html
-      - ${DATA_ROOT}/nextcloud/data:/var/www/html/data
+      - type: bind
+        source: ${NEXTCLOUD_DATA_PATH:-/mnt/nas/nextcloud/data}
+        target: /var/www/html/data
+        bind:
+          create_host_path: false
 
     depends_on:
       nextcloud-redis:

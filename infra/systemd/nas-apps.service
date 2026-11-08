@@ -1,0 +1,28 @@
+[Unit]
+Description=Start NAS-dependent Docker containers
+Requires=docker.service
+PartOf=docker.service
+Wants=network-online.target mnt-nas-data.automount mnt-nas-nextcloud.automount
+After=network-online.target docker.service mnt-nas-data.automount mnt-nas-nextcloud.automount
+StartLimitIntervalSec=0
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Confirm that the NAS is mounted correctly
+ExecStartPre=/usr/local/sbin/check-nas-mounts.sh
+
+# Confirm the Nextcloud data directory exists
+ExecStartPre=/usr/bin/test -f /mnt/nas/nextcloud/data/.ncdata
+
+# Start only NAS-dependent applications
+ExecStart=/usr/bin/docker start jellyfin nextcloud immich_server radarr sonarr bazarr
+
+# Retry when NAS is unavailable
+Restart=on-failure
+RestartSec=30s
+TimeoutStartSec=120s
+
+[Install]
+WantedBy=docker.service

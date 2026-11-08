@@ -75,7 +75,7 @@ services:
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
-    restart: unless-stopped
+    restart: "no"
 
     # qBittorrent gets no independent network interface.
     # All of its traffic passes through Gluetun.
@@ -99,7 +99,11 @@ services:
 
     volumes:
       - ./config/qbittorrent:/config
-      - ${MEDIA_ROOT}:/data
+      - type: bind
+        source: ${MEDIA_ROOT}
+        target: /data
+        bind:
+          create_host_path: false
 
     security_opt:
       - no-new-privileges:true
@@ -111,7 +115,7 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
-    restart: unless-stopped
+    restart: on-failure
 
     environment:
       PUID: ${PUID}
@@ -120,7 +124,11 @@ services:
 
     volumes:
       - ./config/radarr:/config
-      - ${MEDIA_ROOT}:/data
+      - type: bind
+        source: ${MEDIA_ROOT}
+        target: /data
+        bind:
+          create_host_path: false
 
     ports:
       - "${LOCAL_IP}:${RADARR_HOST_PORT}:7878"
@@ -139,7 +147,7 @@ services:
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
-    restart: unless-stopped
+    restart: on-failure
 
     environment:
       PUID: ${PUID}
@@ -148,7 +156,11 @@ services:
 
     volumes:
       - ./config/sonarr:/config
-      - ${MEDIA_ROOT}:/data
+      - type: bind
+        source: ${MEDIA_ROOT}
+        target: /data
+        bind:
+          create_host_path: false
 
     ports:
       - "${LOCAL_IP}:${SONARR_HOST_PORT}:8989"
@@ -194,7 +206,7 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
-    restart: unless-stopped
+    restart: on-failure
 
     environment:
       PUID: ${PUID}
@@ -206,7 +218,11 @@ services:
 
       # Bazarr needs write access because it writes subtitle
       # files beside movie and television files.
-      - ${MEDIA_ROOT}:/data
+      - type: bind
+        source: ${MEDIA_ROOT}
+        target: /data
+        bind:
+          create_host_path: false
 
     ports:
       - "${LOCAL_IP}:${BAZARR_HOST_PORT}:6767"

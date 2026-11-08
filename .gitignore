@@ -42,6 +42,7 @@ wg0.conf
 /stacks/**/log/
 /stacks/**/backup/
 /stacks/**/backups/
+/stacks/**/migration-backup*/
 /stacks/**/tmp/
 /stacks/**/temp/
 
@@ -56,6 +57,9 @@ wg0.conf
 *.sqlite3
 *.sqlite-shm
 *.sqlite-wal
+*.dump
+*.sql.gz
+*.pgdump
 
 ###############################################################################
 # Logs, backups and archives

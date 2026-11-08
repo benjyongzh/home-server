@@ -2,7 +2,7 @@ services:
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
-    restart: unless-stopped
+    restart: on-failure
 
     ports:
       - "${JELLYFIN_HOST_PORT}:8096"
@@ -13,7 +13,12 @@ services:
     volumes:
       - ./data/config:/config
       - ./data/cache:/cache
-      - ${MEDIA_ROOT}:/media:ro
+      - type: bind
+        source: ${MEDIA_ROOT}
+        target: /media
+        read_only: true
+        bind:
+          create_host_path: false
 
     networks:
       - shared

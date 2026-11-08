@@ -4,6 +4,12 @@
 multiple stacks: machine addresses, the local domain, user identity, timezone,
 host paths, the shared Docker network, and host port allocations.
 
+The current deployment uses UGREEN NAS NFS mounts for shared media and
+Nextcloud user data. Start with `MEDIA_ROOT=/mnt/nas/data` and review the NAS
+variables in `.env.example`. The host automount and guarded-start files live
+under `../infra/`; see
+[`../docs/architecture/nas-integration.md`](../docs/architecture/nas-integration.md).
+
 Service credentials and service-only settings remain in each stack's `.env`.
 Both real files are ignored by Git; their `.env.example` counterparts are safe
 templates.

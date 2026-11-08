@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Nextcloud PostgreSQL backup timer
+
+[Timer]
+OnCalendar=*-*-* 02:00:00
+Persistent=true
+AccuracySec=1min
+
+[Install]
+WantedBy=timers.target

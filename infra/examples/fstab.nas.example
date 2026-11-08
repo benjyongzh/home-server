@@ -1,0 +1,7 @@
+# UGREEN DH4300 Plus NFS exports.
+# Merge these lines into /etc/fstab; do not replace the host's complete file.
+# Ensure the mount-point directories exist before reloading systemd.
+
+192.168.0.220:/volume1/data /mnt/nas/data nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0
+192.168.0.220:/volume1/nextcloud-data /mnt/nas/nextcloud nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0
+192.168.0.220:/volume1/backups /mnt/nas/backups nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0

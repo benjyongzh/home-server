@@ -20,7 +20,7 @@ services:
       # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
       - ${UPLOAD_LOCATION}:/data
       - /etc/localtime:/etc/localtime:ro
-      - ${DATA_ROOT}/nextcloud/data/${PRIMARY_USER}/files/Photos:/mnt/external/nextcloud-photos:ro
+      - ${NEXTCLOUD_DATA_PATH:-/mnt/nas/nextcloud/data}/${PRIMARY_USER}/files/Photos:/mnt/external/nextcloud-photos:ro
     env_file:
       - ../../shared/.env
       - .env
@@ -29,7 +29,7 @@ services:
     depends_on:
       - redis
       - database
-    restart: always
+    restart: on-failure
     healthcheck:
       disable: false
 
