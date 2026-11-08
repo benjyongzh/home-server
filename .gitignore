@@ -12,6 +12,8 @@ passwords.*
 
 credentials*
 secrets*
+*.envrc
+.secrets/
 
 *.key
 *.pem

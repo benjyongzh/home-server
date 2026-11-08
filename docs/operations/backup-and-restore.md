@@ -4,7 +4,7 @@
 
 | Asset | Current protection | Location | Main gap |
 |---|---|---|---|
-| Nextcloud PostgreSQL database | Daily validated custom archive, about 30 days | `/var/backups/nextcloud-db` on mini PC | Same host as database; no automatic NAS/offsite copy |
+| Nextcloud PostgreSQL database | Daily validated custom archive, about 30 days | `/var/backups/nextcloud-db` plus verified copy under `/mnt/nas/backups/nextcloud-db` | Mini-PC copy shares host failure domain; NAS copy shares NAS disk failure domain |
 | Nextcloud user files | NAS Btrfs snapshots weekly, 6 retained | NAS `nextcloud-data` | One physical NAS disk; snapshots are not independent backups |
 | Immich PostgreSQL database | Built-in daily SQL gzip dump, 14 retained | `/mnt/home-server-data/immich/library/backups` | Same disk/tree as Immich library |
 | Immich managed files | No independent backup verified | `/mnt/home-server-data/immich/library` | Mini-PC disk is a single failure domain |
@@ -30,7 +30,10 @@ It:
 5. runs `pg_restore --list`;
 6. runs a full `pg_restore --file=/dev/null` decompression/read test;
 7. atomically renames the verified file;
-8. deletes `nextcloud-*.dump` files with `-mtime +29`.
+8. verifies `/mnt/nas/backups` is mounted from the expected export, copies the
+   archive to a temporary NAS file, byte-compares it, and atomically renames
+   the verified copy;
+9. deletes `nextcloud-*.dump` files older than 29 days from both destinations.
 
 `-mtime +29` gives approximately 30 days of retention based on whole-day age.
 
@@ -120,7 +123,9 @@ through 8 November. This confirms the intended daily 02:00 schedule and
 
 The schedule/retention are managed in Immich's administrative settings. They
 must be recreated manually after an application rebuild and checked after
-upgrades.
+upgrades. A separate systemd timer/script to replicate these dumps to NAS is
+still missing; add independent replication before relying on the local Immich
+dumps for disaster recovery.
 
 These dumps protect the Immich database only. They do not protect uploaded
 assets, thumbnails, profiles, encoded videos, or the external Nextcloud photo

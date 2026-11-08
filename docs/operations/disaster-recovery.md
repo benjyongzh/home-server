@@ -172,7 +172,14 @@ Recreate local DNS records for Caddy hostnames, then test:
 - qBittorrent only after VPN safety approval
 - scheduled database backups and NAS snapshots
 
-## 10. Close the recovery
+## 10. Enable repository automation
+
+GitHub Actions validates safe-example Compose renders, shell syntax, and
+whitespace, and scans history with Gitleaks. Enable GitHub secret scanning and
+push protection in repository settings as additional server-side controls.
+CI does not replace restore rehearsals or runtime monitoring.
+
+## 11. Close the recovery
 
 Document:
 

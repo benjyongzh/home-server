@@ -70,6 +70,9 @@ This is a startup guard, not a full availability controller:
   and some other restart paths can bypass the systemd pre-check.
 - Docker's restart policy is independent from this unit; a container failure
   after startup can cause Docker to retry it without rerunning the mount check.
+- The current `on-failure` policy can therefore retry a NAS-dependent
+  container while its NAS mount is unavailable; this unit cannot prevent every
+  Docker-initiated restart.
 - `RemainAfterExit=yes` reports the one-shot unit active after a successful
   start; that status is not proof that the NAS remains reachable.
 - The `.ncdata` marker verifies the expected Nextcloud directory, but does not

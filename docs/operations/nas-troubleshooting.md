@@ -85,6 +85,8 @@ With `hard` NFS mounts, processes attempting I/O commonly block and may enter
 uninterruptible sleep. Symptoms can include frozen requests, stalled scans,
 timeouts, stuck container stops, and hung host commands that traverse the
 mount. The containers are not automatically stopped by `nas-apps.service`.
+Docker's `on-failure` restart policy operates independently and can retry a
+failed NAS-dependent container without repeating the mount check.
 
 Response:
 

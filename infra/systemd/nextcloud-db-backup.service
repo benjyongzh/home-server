@@ -1,7 +1,8 @@
 [Unit]
 Description=Backup Nextcloud PostgreSQL database
 Requires=docker.service
-After=docker.service
+Wants=mnt-nas-backups.automount
+After=docker.service mnt-nas-backups.automount
 
 [Service]
 Type=oneshot
