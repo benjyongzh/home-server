@@ -44,7 +44,21 @@ jobs:
           sh -n stacks/torrent/scripts/update-qbit-port.sh
 
       - name: Validate example NFS mount entries
-        run: findmnt --verify --tab-file infra/examples/fstab.nas.example
+        shell: bash
+        run: |
+          set -euo pipefail
+          # findmnt --verify requires mount targets to exist. A GitHub runner
+          # has no /mnt/nas directories, so check an otherwise identical copy
+          # whose targets live under a disposable temporary directory.
+          ci_mount_root="$(mktemp -d)"
+          mkdir -p "$ci_mount_root/mnt/nas"/{data,nextcloud,backups}
+          sed "s# /mnt/nas/# $ci_mount_root/mnt/nas/#g" \
+            infra/examples/fstab.nas.example > "$ci_mount_root/fstab"
+          if grep -q ' /mnt/nas/' "$ci_mount_root/fstab"; then
+            echo 'Unmapped NAS mount target in fstab example' >&2
+            exit 1
+          fi
+          findmnt --verify --tab-file "$ci_mount_root/fstab"
 
       - name: Check committed whitespace
         run: git diff-tree --check --root -m -r --no-commit-id HEAD
