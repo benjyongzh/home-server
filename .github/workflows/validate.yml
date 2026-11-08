@@ -17,7 +17,7 @@ jobs:
           # The whitespace check needs the checked-out commit's parent(s).
           fetch-depth: 0
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
       - name: Validate Compose projects with safe examples
         shell: bash
