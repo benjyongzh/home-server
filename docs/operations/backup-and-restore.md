@@ -6,8 +6,8 @@
 |---|---|---|---|
 | Nextcloud PostgreSQL database | Daily validated custom archive, about 30 days | `/var/backups/nextcloud-db` plus verified copy under `/mnt/nas/backups/nextcloud-db` | Mini-PC copy shares host failure domain; NAS copy shares NAS disk failure domain |
 | Nextcloud user files | NAS Btrfs snapshots weekly, 6 retained | NAS `nextcloud-data` | One physical NAS disk; snapshots are not independent backups |
-| Immich PostgreSQL database | Built-in daily SQL gzip dump, 14 retained | `/mnt/home-server-data/immich/library/backups` | Same disk/tree as Immich library |
-| Immich managed files | No independent backup verified | `/mnt/home-server-data/immich/library` | Mini-PC disk is a single failure domain |
+| Immich PostgreSQL database | Built-in daily SQL gzip dump, 14 retained | `/srv/immich/library/backups` | Same VM root filesystem as Immich library |
+| Immich managed files | No independent backup verified | `/srv/immich/library` | VM root disk is a single failure domain |
 | Immich external Nextcloud photos | Covered only with Nextcloud NAS files/snapshots | NAS `nextcloud-data` | Same single NAS disk |
 | Media/download data | Monthly NAS Btrfs snapshots, 6 retained | NAS `data` | One physical NAS disk |
 | Compose/IaC | Git repository | GitHub after push | Private `.env` files are intentionally absent |
@@ -123,7 +123,7 @@ repository.
 The observed destination is:
 
 ```text
-/mnt/home-server-data/immich/library/backups
+/srv/immich/library/backups
 ```
 
 This is the host side of Immich's `/data/backups` directory. On 8 November

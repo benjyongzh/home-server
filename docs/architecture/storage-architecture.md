@@ -18,8 +18,8 @@ not need library or data-directory reconfiguration.
 | `/mnt/nas/nextcloud/data` | NAS export `/volume1/nextcloud-data` | Nextcloud | `/var/www/html/data` | Read-write |
 | `/mnt/nas/nextcloud/data/<user>/files/Photos` | NAS export `/volume1/nextcloud-data` | Immich external library | `/mnt/external/nextcloud-photos` | Read-only |
 | `/mnt/nas/backups` | NAS export `/volume1/backups` | Migration/operator backups | No application mount | Operator-managed |
-| `/mnt/home-server-data/immich/library` | Mini-PC disk | Immich Server | `/data` | Read-write |
-| `/mnt/home-server-data/immich/postgres` | Mini-PC disk | Immich PostgreSQL | `/var/lib/postgresql/data` | Read-write |
+| `/srv/immich/library` | Ubuntu VM root filesystem | Immich Server | `/data` | Read-write |
+| `/srv/immich/postgres` | Ubuntu VM root filesystem | Immich PostgreSQL | `/var/lib/postgresql/data` | Read-write |
 | `/opt/stacks/postgres/data` | Mini-PC disk | Shared PostgreSQL | `/var/lib/postgresql/data` | Read-write |
 | `/opt/stacks/<stack>/data` or `config` | Mini-PC disk | Stack-specific configuration/state | Application-specific | Read-write |
 
@@ -27,7 +27,8 @@ The shared PostgreSQL container holds Nextcloud's database. Nextcloud's files
 are on the NAS, but its database remains on the mini PC.
 
 Immich's database, managed files, thumbnails, encoded video, profiles, uploads,
-and built-in database dumps remain under its mini-PC library root. Only the
+and built-in database dumps now live under `/srv/immich` on the VM root filesystem;
+the former `/mnt/home-server-data` VHDX mount is commented out in host fstab. Only the
 Nextcloud Photos external library is read from the NAS.
 
 ## NFS exports

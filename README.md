@@ -281,7 +281,7 @@ flowchart LR
         DataMount["MEDIA_ROOT<br/>/mnt/nas/data"]
         NCMount["NEXTCLOUD_DATA_PATH<br/>/mnt/nas/nextcloud/data"]
         BackupMount["NAS_BACKUP_ROOT<br/>/mnt/nas/backups"]
-        MiniImmich["DATA_ROOT/immich<br/>library and PostgreSQL"]
+        MiniImmich["/srv/immich<br/>library and PostgreSQL on VM root disk"]
         MiniPostgres["stacks/postgres/data<br/>Nextcloud PostgreSQL"]
         LocalDBBackups["/var/backups/nextcloud-db<br/>validated DB dumps"]
     end
@@ -397,7 +397,7 @@ type; it is not a literal value to paste.
 | `TZ` | IANA timezone name, for example `<Region/City>` | Yes |
 | `INSTALL_ROOT` | Absolute checkout parent; normally the directory containing this repository | Yes |
 | `STACKS_ROOT` | Absolute stacks directory, normally derived from `INSTALL_ROOT` | Yes |
-| `DATA_ROOT` | Mini-PC persistent-data root used by Immich and other local storage | Yes |
+| `DATA_ROOT` | VM-local root for example Immich storage paths (`/srv` here); the live Immich bind mounts are set by its stack `.env` | For example-based setup |
 | `MEDIA_ROOT` | Mounted NAS media/download root; must not point to the legacy SMB mount | Yes |
 | `SHARED_NETWORK` | Existing external Docker network shared by Caddy and applications | Yes |
 | `NAS_HOST` | LAN IP or resolvable hostname of the NAS | Yes for reconstruction |
@@ -495,8 +495,8 @@ Install or provide:
 - `nfs-common`, util-linux (`findmnt`), and coreutils for NAS integration
 - A working `/dev/net/tun` device for Gluetun
 - Reachability to the UGREEN NAS and its three NFS exports
-- Storage paths configured by `DATA_ROOT`, `MEDIA_ROOT`,
-  and `NEXTCLOUD_DATA_PATH`
+- VM-local Immich paths configured by `UPLOAD_LOCATION` and `DB_DATA_LOCATION`,
+  plus NAS paths configured by `MEDIA_ROOT` and `NEXTCLOUD_DATA_PATH`
 - Correct ownership and permissions for the configured `PUID` and `PGID`
 - A local DNS setup for the Caddy hostnames
 - An active Proton VPN subscription and WireGuard key before starting Gluetun
@@ -504,8 +504,9 @@ Install or provide:
 
 The repository is designed to live under `/opt`, but `shared/compose.sh`
 detects its actual checkout location and overrides `INSTALL_ROOT` when it runs.
-External storage locations are still controlled explicitly by `DATA_ROOT` and
-`MEDIA_ROOT`.
+Storage locations are controlled by the stack and shared `.env` values;
+`DATA_ROOT` is a convenience for example Immich paths, not a required live
+variable when those paths are set explicitly.
 
 ## First-time deployment
 
@@ -822,12 +823,12 @@ done
 ### Immich
 
 - Runs its own database and Valkey containers.
-- Stores its application library and PostgreSQL data on the mini PC under
-  `/mnt/home-server-data/immich`.
+- Stores its application library and PostgreSQL data on the VM root filesystem
+  under `/srv/immich`; the old virtual-disk mount is no longer used.
 - Mounts Nextcloud photos from the NAS read-only as an external library at
   `/mnt/external/nextcloud-photos`.
 - Stores built-in database dumps in the application library's `backups/`
-  directory; these are not independent of the mini-PC disk.
+  directory; these are not independent of the VM root disk.
 - Keep the Immich Compose file compatible with the chosen Immich release.
 
 ### Jellyfin
@@ -926,7 +927,7 @@ Back up at least:
 - `shared/.env`
 - Every `stacks/<name>/.env`
 - Stack-local `data/`, `config/`, and `gluetun/` directories
-- `DATA_ROOT`
+- Immich's configured `UPLOAD_LOCATION` and `DB_DATA_LOCATION` (currently under `/srv/immich`)
 - `MEDIA_ROOT` where the media itself must be protected
 - `/mnt/nas/nextcloud/data`
 - `/mnt/nas/backups` where retained NAS-hosted artifacts are required

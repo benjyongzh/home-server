@@ -10,6 +10,9 @@
 # The former Windows SMB/CIFS /mnt/media entry is commented out on the source
 # host and is intentionally omitted here. Do not restore it for migrated media
 # services: Jellyfin and the torrent/media stack use /mnt/nas/data instead.
+# The former /mnt/home-server-data VHDX mount is also commented out on the
+# source host and omitted here. Immich library and PostgreSQL now use
+# /srv/immich on the Ubuntu VM root filesystem.
 
 192.168.0.220:/volume1/data /mnt/nas/data nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0
 192.168.0.220:/volume1/nextcloud-data /mnt/nas/nextcloud nfs rw,hard,_netdev,nofail,x-systemd.automount 0 0

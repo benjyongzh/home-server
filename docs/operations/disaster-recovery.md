@@ -72,8 +72,8 @@ EFI, swap, and any still-required local mounts.
 
 Restore, with correct ownership and permissions:
 
-- `/mnt/home-server-data/immich/library`
-- `/mnt/home-server-data/immich/postgres`, or prepare an empty database volume
+- `/srv/immich/library`
+- `/srv/immich/postgres`, or prepare an empty database directory
   for logical restore
 - `/opt/stacks/nextcloud/data/html`
 - `/opt/stacks/postgres/data`, or prepare an empty shared PostgreSQL volume for
@@ -133,7 +133,7 @@ Choose one database path:
 
 - Restore the cold, version-compatible Immich PostgreSQL data directory, or
 - Initialize an empty compatible database and restore a built-in SQL gzip dump
-  from `/mnt/home-server-data/immich/library/backups`.
+  from `/srv/immich/library/backups`.
 
 Then:
 
